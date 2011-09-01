@@ -22,6 +22,7 @@ from django.core.management.base import BaseCommand
 from django.test.utils import setup_test_environment
 from django.test.utils import teardown_test_environment
 
+import lettuce
 from lettuce import Runner
 from lettuce import registry
 
@@ -58,6 +59,10 @@ class Command(BaseCommand):
 
         make_option('--xunit-file', action='store', dest='xunit_file', default=None,
             help='Write JUnit XML to this file. Defaults to lettucetests.xml'),
+            
+        make_option("--tags", action="append", dest="tags_to_run", default=[],
+            help='Comma separated list of tags, run if any found, multiple uses of this argument mean logical AND')
+        
     )
     def stopserver(self, failed=False):
         raise SystemExit(int(failed))
@@ -85,6 +90,10 @@ class Command(BaseCommand):
         apps_to_avoid = tuple(options.get('avoid_apps', '').split(","))
         run_server = not options.get('no_server', False)
 
+        run_controller = lettuce.RunController()
+        tag_checker = lettuce.core.TagChecker(options.get('tags_to_run'))
+        run_controller.add(tag_checker)
+        
         paths = self.get_paths(args, apps_to_run, apps_to_avoid)
         if run_server:
             server.start()
@@ -107,7 +116,8 @@ class Command(BaseCommand):
 
                 runner = Runner(path, options.get('scenarios'), verbosity,
                                 enable_xunit=options.get('enable_xunit'),
-                                xunit_filename=options.get('xunit_file'))
+                                xunit_filename=options.get('xunit_file'),
+                                run_controller = run_controller)
                 result = runner.run()
                 if app_module is not None:
                     registry.call_hook('after_each', 'app', app_module, result)
