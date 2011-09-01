@@ -119,6 +119,8 @@ def print_end(total):
             wrt("    assert False, 'This step must be implemented'\n")
 
 def print_no_features_found(where):
+    # commented this annoying output:
+    '''
     where = core.fs.relpath(where)
     if not where.startswith(os.sep):
         where = '.%s%s' % (os.sep, where)
@@ -128,4 +130,4 @@ def print_no_features_found(where):
         'could not find features at '
         '%s\n' % where
     )
-
+    '''

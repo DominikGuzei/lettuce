@@ -241,6 +241,8 @@ def print_end(total):
             wrt("\n")
 
 def print_no_features_found(where):
+    # commented this annoying output:
+    '''
     where = core.fs.relpath(where)
     if not where.startswith(os.sep):
         where = '.%s%s' % (os.sep, where)
@@ -250,3 +252,4 @@ def print_no_features_found(where):
         '\033[1;37mcould not find features at '
         '\033[1;33m%s\033[0m\n' % where
     )
+    '''
